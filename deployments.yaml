@@ -1,0 +1,106 @@
+# note: YAML definitions for multiple components/resources can be bundled together into one YAML file
+# '---' is used to separate the definitions of the components/resources
+
+# define the `Deployment` for the mongodb server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-server
+  labels:
+    app:  mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key:  mongo-root-username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key:  mongo-root-password
+
+---
+# define the `Deployment` for mongo-express
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express-deployment
+  labels:
+    app:  mongo-express
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+    spec:
+      containers:
+      - name: mongo-express
+        image: mongo-express
+        ports:
+        - containerPort: 8081
+        env:
+        - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key:  mongo-root-username
+        - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key:  mongo-root-password
+        - name: ME_CONFIG_MONGODB_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-configmap
+              key:  database_url
+            # Could have added db port but default value is 27017 so didn't
+
+---
+# define the `Deployment` for flask-app
+# set ImagePullPolicy to 'Never' to allow the use of the locally built image
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-app-deployment
+  labels:
+    app:  blog-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-app
+  template:
+    metadata:
+      labels:
+        app: blog-app
+    spec:
+      containers:
+      - name: blog-app
+        image: blog-app
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+
