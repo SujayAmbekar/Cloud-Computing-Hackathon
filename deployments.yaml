@@ -34,7 +34,6 @@ spec:
             secretKeyRef:
               name: mongodb-secret
               key:  mongo-root-password
-
 ---
 # define the `Deployment` for mongo-express
 apiVersion: apps/v1
@@ -74,13 +73,9 @@ spec:
             configMapKeyRef:
               name: mongo-configmap
               key:  database_url
-            # Could have added db port but default value is 27017 so didn't
-
 ---
 # define the `Deployment` for flask-app
 # set ImagePullPolicy to 'Never' to allow the use of the locally built image
-
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -103,4 +98,3 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 5000
-

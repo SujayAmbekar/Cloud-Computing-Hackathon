@@ -2,14 +2,13 @@
 # '---' is used to separate the definitions of the components/resources
 
 # define a service for the mongodb server
-
 apiVersion: v1
 kind: Service
 metadata:
   name: mongodb-service
 spec:
   selector:
-    app: mongodb    # label of pod to connect to
+    app: mongodb
   ports:
   - protocol: TCP
     port: 27017     # service port
@@ -18,7 +17,6 @@ spec:
 # define a service for mongo-express
 # set the type to LoadBalancer and configure the ports
 # don't forget to specify a nodePort as well! a nodePort exposes the pod to applications outside the cluster. this will allow you to access the frontend admin interface from your host system
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -31,13 +29,10 @@ spec:
   - protocol: TCP
     port: 8081    # service port
     targetPort: 8081 # pod port
-    nodePort: 30000         # put in browser to access service
-
 ---
 # define a `Service` for flask-app
 # set the type to LoadBalancer and configure the ports
 # don't forget to specify a nodePort as well! a nodePort exposes the pod to applications outside the cluster. this will allow you to access the frontend admin interface from your host system
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -50,7 +45,3 @@ spec:
   - protocol: TCP
     port: 5000    # service port
     targetPort: 5000 # pod port
-    nodePort: 30001         # put in browser to access service
-
-
-
